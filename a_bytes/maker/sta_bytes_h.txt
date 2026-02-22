@@ -1,0 +1,26 @@
+
+[file:..\include\a_bytes_header.h]
+
+[file:..\include\a_bytes_public.h]
+
+[file:..\include\a_bytes_footer.h]
+
+
+#ifdef STA_BYTES_IMPLEMENTATION
+
+#ifndef STA_BYTES_IMPLEMENTATION_INCLUDED
+#define STA_BYTES_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+[file:..\a_bytes.c]
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif

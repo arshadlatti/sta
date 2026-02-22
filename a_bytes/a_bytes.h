@@ -1,0 +1,55 @@
+
+#ifndef STA_BYTES_H
+#define STA_BYTES_H
+
+//#include "STA/sta_def.h"
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+/*
+#define STA_BYTES_IMPLEMENTATION
+#include "sta-master/sta/sta_bytes.h"
+*/
+
+
+//void bytes_read_at(void * bytes_dst,const void * bytes_src,int start,int len);
+//void bytes_write_at(void * bytes_dst,const void * bytes_src,int start,int len);
+
+void * a_bytes_copy_malloc(const void * bytes,int bytes_size);
+
+void * a_bytes_copy_2_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2);
+
+void * a_bytes_copy_3_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2,const void * bytes_3,int bytes_size_3);
+
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#ifdef STA_BYTES_IMPLEMENTATION
+
+#ifndef STA_BYTES_IMPLEMENTATION_INCLUDED
+#define STA_BYTES_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "sta_bytes.c"
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif
