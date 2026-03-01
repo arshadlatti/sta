@@ -1,0 +1,8 @@
+a_get_bit #include "sta-main\a_bits\source\a_get_bit.c"
+a_inc_bits #include "sta-main\a_bits\source\a_inc_bits.c"
+a_inc_bits_r #include "sta-main\a_bits\source\a_inc_bits_r.c" 
+a_set_2_bits #include "sta-main\a_bits\source\a_set_2_bits.c"
+a_set_bit #include "sta-main\a_bits\source\a_set_bit.c"
+a_u8_get_2_bits #include "sta-main\a_bits\source\a_u8_get_2_bits.c" 
+a_u8_get_bit #include "sta-main\a_bits\source\a_u8_get_bit.c"
+a_u8_set_bit #include "sta-main\a_bits\source\a_u8_set_bit.c"

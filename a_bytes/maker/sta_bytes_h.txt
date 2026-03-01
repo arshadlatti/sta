@@ -1,4 +1,13 @@
 
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_bytes_public.h]
+
+#endif
+
+[file:..\..\a_def\a_def.h]
+
+
 [file:..\include\a_bytes_header.h]
 
 [file:..\include\a_bytes_public.h]

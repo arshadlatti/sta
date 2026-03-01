@@ -1,0 +1,36 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_bits_public.h]
+
+#endif
+
+[file:..\..\a_def\a_def.h]
+
+
+[file:..\include\a_bits_header.h]
+
+[file:..\include\a_bits_public.h]
+
+[file:..\include\a_bits_footer.h]
+
+
+
+#ifdef STA_BITS_IMPLEMENTATION
+
+#ifndef STA_BITS_IMPLEMENTATION_INCLUDED
+#define STA_BITS_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+[file:..\a_bits.c]
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif

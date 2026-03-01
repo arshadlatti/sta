@@ -1,60 +1,106 @@
 
 #ifdef STA_PUBLIC_API
 
-
 /*
-#define STA_BYTES_IMPLEMENTATION
-#include "sta-main/sta_bytes.h"
+#define STA_BITS_IMPLEMENTATION
+#include "sta-main/sta_bits.h"
 */
 
+a_bool a_u8_get_bit(uint8_t b,int bit_num);
+void a_u8_set_bit(uint8_t * b,int bit_num,a_bool v);
 
-void a_bytes_read_at(void * bytes_dst,const void * bytes_src,int start,int len);
-void a_bytes_write_at(void * bytes_dst,const void * bytes_src,int start,int len);
+int a_u8_get_2_bits(uint8_t b,int bit_num);
 
-void * a_bytes_copy_malloc(const void * bytes,int bytes_size);
+a_bool a_get_bit(const uint8_t * bits,int loc);
+void a_set_bit(uint8_t * bits,int loc,int v);
 
-void * a_bytes_copy_2_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2);
+void a_set_2_bits(uint8_t * bits,int loc,a_bool v,a_bool v2);
 
-void * a_bytes_copy_3_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2,const void * bytes_3,int bytes_size_3);
-
- void * a_bytes_can_null_term_from_file_malloc(const char * file_name,a_bool be_null_term_output,long * out_size);
- 
-a_bool a_bytes_to_file(const char * file_name,const void * buffer,long buffer_size);
-void * a_bytes_from_file_malloc(const char * file_name,long * out_size);
- void * a_bytes_from_file_part_malloc(const char * file_name,int offset,int size);
- 
- void * a_bytes_pointer_at_offset(void * base,int offset);
-void * a_bytes_malloc(void ** out_ptr_ptr,size_t size);
-//void a_free(void * p);
-#define a_free(p) {if(p) free(p);}
-#define a_malloc(var,size) a_bytes_malloc((void**)&var,size)
-
-
- // void * a_bytes_from_file_header_malloc(const char * file_name,int size);
-#define a_bytes_from_file_header_malloc(file_name,size) a_bytes_from_file_part_malloc(file_name,0,size)
-
-char * a_string_from_file_malloc(const char * file_name);
-a_bool a_string_to_file(const char * file_name,const char * text);
-
-//
-#define a_array_to_file(file_name,array_name,array_size,name_of_array_type) a_bytes_to_file(file_name,array_name,array_size * sizeof(name_of_array_type))
-
-
-// var uint8_t * data; long data_size;
- #define a_data_bytes_from_file_malloc(filename) long data_size; uint8_t * data = a_bytes_from_file_malloc(filename,&data_size);
-
- 
-#define a_data_bytes_from_file_part_malloc(filename,offset,size) long data_size; uint8_t * data = a_bytes_from_file_part(filename,offset,size);
-
-
-
-#define a_data_bytes_to_file(filename) a_bytes_to_file(filename,data,data_size);
+//++  left and right(r) side
+a_bool a_inc_bits(uint8_t * bits,int max_bits);
+a_bool a_inc_bits_r(uint8_t * bits,int max_bits);
 
 
 // A Project By Arshad Latti
+
+
+
+#define A_BIT_0   0x1
+#define A_BIT_1   0x2
+#define A_BIT_2   0x4
+#define A_BIT_3   0x8
+#define A_BIT_4   0x10
+#define A_BIT_5   0x20
+#define A_BIT_6   0x40
+#define A_BIT_7   0x80
+#define A_BIT_8   0x100
+#define A_BIT_9   0x200
+#define A_BIT_10   0x400
+#define A_BIT_11   0x800
+#define A_BIT_12   0x1000
+#define A_BIT_13   0x2000
+#define A_BIT_14   0x4000
+#define A_BIT_15   0x8000
+#define A_BIT_16   0x10000
+#define A_BIT_17   0x20000
+#define A_BIT_18   0x40000
+#define A_BIT_19   0x80000
+#define A_BIT_20   0x100000
+#define A_BIT_21   0x200000
+#define A_BIT_22   0x400000
+#define A_BIT_23   0x800000
+#define A_BIT_24   0x1000000
+#define A_BIT_25   0x2000000
+#define A_BIT_26   0x4000000
+#define A_BIT_27   0x8000000
+#define A_BIT_28   0x10000000
+#define A_BIT_29   0x20000000
+#define A_BIT_30   0x40000000
+#define A_BIT_31   0x80000000
+
+
+#define A_MASK_BIT_0    0xFFFFFFFE
+#define A_MASK_BIT_1    0xFFFFFFFD
+#define A_MASK_BIT_2    0xFFFFFFFB
+#define A_MASK_BIT_3    0xFFFFFFF7
+#define A_MASK_BIT_4    0xFFFFFFEF
+#define A_MASK_BIT_5    0xFFFFFFDF
+#define A_MASK_BIT_6    0xFFFFFFBF
+#define A_MASK_BIT_7    0xFFFFFF7F
+#define A_MASK_BIT_8    0xFFFFFEFF
+#define A_MASK_BIT_9    0xFFFFFDFF
+#define A_MASK_BIT_10   0xFFFFFBFF
+#define A_MASK_BIT_11   0xFFFFF7FF
+#define A_MASK_BIT_12   0xFFFFEFFF
+#define A_MASK_BIT_13   0xFFFFDFFF
+#define A_MASK_BIT_14   0xFFFFBFFF
+#define A_MASK_BIT_15   0xFFFF7FFF
+#define A_MASK_BIT_16   0xFFFEFFFF
+#define A_MASK_BIT_17   0xFFFDFFFF
+#define A_MASK_BIT_18   0xFFFBFFFF
+#define A_MASK_BIT_19   0xFFF7FFFF
+#define A_MASK_BIT_20   0xFFEFFFFF
+#define A_MASK_BIT_21   0xFFDFFFFF
+#define A_MASK_BIT_22   0xFFBFFFFF
+#define A_MASK_BIT_23   0xFF7FFFFF
+#define A_MASK_BIT_24   0xFEFFFFFF
+#define A_MASK_BIT_25   0xFDFFFFFF
+#define A_MASK_BIT_26   0xFBFFFFFF
+#define A_MASK_BIT_27   0xF7FFFFFF
+#define A_MASK_BIT_28   0xEFFFFFFF
+#define A_MASK_BIT_29   0xDFFFFFFF
+#define A_MASK_BIT_30   0xBFFFFFFF
+#define A_MASK_BIT_31   0x7fffffff
+
+ //BIT_ mask       or  eax, 0x80000000 (set)  -> and eax, 0x7fffffff  mask(reset)
+ // and if(a & BIT_31) //test 
  
 
 #endif
+
+
+
+
 
 #ifndef STA_DEF_H_
 #define STA_DEF_H_
@@ -299,70 +345,37 @@ for(i_x = 0; i_x < w ; i_x++){
 #endif
 
 
-#ifndef STA_BYTES_H
-#define STA_BYTES_H
+
+#ifndef STA_BITS_H
+#define STA_BITS_H
 
 //#include "STA/sta_def.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
 /*
-#define STA_BYTES_IMPLEMENTATION
-#include "sta-main/sta_bytes.h"
+#define STA_BITS_IMPLEMENTATION
+#include "sta-main/sta_bits.h"
 */
 
+a_bool a_u8_get_bit(uint8_t b,int bit_num);
+void a_u8_set_bit(uint8_t * b,int bit_num,a_bool v);
 
-void a_bytes_read_at(void * bytes_dst,const void * bytes_src,int start,int len);
-void a_bytes_write_at(void * bytes_dst,const void * bytes_src,int start,int len);
+int a_u8_get_2_bits(uint8_t b,int bit_num);
 
-void * a_bytes_copy_malloc(const void * bytes,int bytes_size);
+a_bool a_get_bit(const uint8_t * bits,int loc);
+void a_set_bit(uint8_t * bits,int loc,int v);
 
-void * a_bytes_copy_2_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2);
+void a_set_2_bits(uint8_t * bits,int loc,a_bool v,a_bool v2);
 
-void * a_bytes_copy_3_malloc(const void * bytes_1,int bytes_size_1,const void * bytes_2,int bytes_size_2,const void * bytes_3,int bytes_size_3);
-
- void * a_bytes_can_null_term_from_file_malloc(const char * file_name,a_bool be_null_term_output,long * out_size);
- 
-a_bool a_bytes_to_file(const char * file_name,const void * buffer,long buffer_size);
-void * a_bytes_from_file_malloc(const char * file_name,long * out_size);
- void * a_bytes_from_file_part_malloc(const char * file_name,int offset,int size);
- 
- void * a_bytes_pointer_at_offset(void * base,int offset);
-void * a_bytes_malloc(void ** out_ptr_ptr,size_t size);
-//void a_free(void * p);
-#define a_free(p) {if(p) free(p);}
-#define a_malloc(var,size) a_bytes_malloc((void**)&var,size)
-
-
- // void * a_bytes_from_file_header_malloc(const char * file_name,int size);
-#define a_bytes_from_file_header_malloc(file_name,size) a_bytes_from_file_part_malloc(file_name,0,size)
-
-char * a_string_from_file_malloc(const char * file_name);
-a_bool a_string_to_file(const char * file_name,const char * text);
-
-//
-#define a_array_to_file(file_name,array_name,array_size,name_of_array_type) a_bytes_to_file(file_name,array_name,array_size * sizeof(name_of_array_type))
-
-
-// var uint8_t * data; long data_size;
- #define a_data_bytes_from_file_malloc(filename) long data_size; uint8_t * data = a_bytes_from_file_malloc(filename,&data_size);
-
- 
-#define a_data_bytes_from_file_part_malloc(filename,offset,size) long data_size; uint8_t * data = a_bytes_from_file_part(filename,offset,size);
-
-
-
-#define a_data_bytes_to_file(filename) a_bytes_to_file(filename,data,data_size);
+//++  left and right(r) side
+a_bool a_inc_bits(uint8_t * bits,int max_bits);
+a_bool a_inc_bits_r(uint8_t * bits,int max_bits);
 
 
 // A Project By Arshad Latti
- 
 
 
 #ifdef __cplusplus
@@ -371,16 +384,18 @@ a_bool a_string_to_file(const char * file_name,const char * text);
 
 #endif
 
-#ifdef STA_BYTES_IMPLEMENTATION
 
-#ifndef STA_BYTES_IMPLEMENTATION_INCLUDED
-#define STA_BYTES_IMPLEMENTATION_INCLUDED
+
+#ifdef STA_BITS_IMPLEMENTATION
+
+#ifndef STA_BITS_IMPLEMENTATION_INCLUDED
+#define STA_BITS_IMPLEMENTATION_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "sta_bytes.c"
+#include "a_bits.c"
 
 #ifdef __cplusplus
 }

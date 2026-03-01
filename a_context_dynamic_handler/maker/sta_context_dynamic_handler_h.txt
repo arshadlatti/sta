@@ -1,0 +1,43 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_context_dynamic_handler_public.h]
+
+#endif
+
+#ifdef STA_CONTEXT_DYNAMIC_HANDLER_IMPLEMENTATION
+#define STA_GT_LIST_IMPLEMENTATION
+#endif
+[file:..\..\sta_gt_list.h]
+
+[file:..\include\a_context_dynamic_handler_header.h]
+
+[file:..\include\a_context_dynamic_handler_public.h]
+
+[file:..\include\a_context_dynamic_handler_footer.h]
+
+
+
+
+#ifdef STA_CONTEXT_DYNAMIC_HANDLER_IMPLEMENTATION
+
+#ifndef STA_CONTEXT_DYNAMIC_HANDLER_IMPLEMENTATION_INCLUDED
+#define STA_CONTEXT_DYNAMIC_HANDLER_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+[file:..\a_context_dynamic_handler.c]
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif
+
+
+

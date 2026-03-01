@@ -1,0 +1,7 @@
+context_dynamic_handler_add #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_add.c"
+context_dynamic_handler_add_var #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_add_var.c"
+context_dynamic_handler_delete #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_delete.c"
+context_dynamic_handler_new #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_new.c"
+context_dynamic_handler_set_error #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_set_error.c"
+context_dynamic_handler_sub #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler_sub.c"
+context_dynamic_handler__item_term #include "sta-main\a_context_dynamic_handler\source\context_dynamic_handler__item_term.c"

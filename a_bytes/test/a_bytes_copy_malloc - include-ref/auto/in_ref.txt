@@ -1,0 +1,3 @@
+//-- 
+C:\Users\adam\AppData\Local\Temp\ccau58EC.o:main.c:(.text+0x48): undefined reference to `a_bytes_copy_malloc'
+collect2: ld returned 1 exit status

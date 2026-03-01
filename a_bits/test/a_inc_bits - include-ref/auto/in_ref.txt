@@ -1,0 +1,10 @@
+//-- 
+C:\Users\adam\AppData\Local\Temp\cc2rqxFH.o:main.c:(.text+0x43): undefined reference to `a_inc_bits'
+collect2: ld returned 1 exit status
+C:\Users\adam\AppData\Local\Temp\ccaG4d3U.o:main.c:(.text+0x1d): undefined reference to `a_get_bit'
+C:\Users\adam\AppData\Local\Temp\ccaG4d3U.o:main.c:(.text+0x3b): undefined reference to `a_set_bit'
+C:\Users\adam\AppData\Local\Temp\ccaG4d3U.o:main.c:(.text+0x5b): undefined reference to `a_set_bit'
+collect2: ld returned 1 exit status
+C:\Users\adam\AppData\Local\Temp\ccUtPCP0.o:main.c:(.text+0x39): undefined reference to `a_u8_get_bit'
+C:\Users\adam\AppData\Local\Temp\ccUtPCP0.o:main.c:(.text+0xee): undefined reference to `a_u8_set_bit'
+collect2: ld returned 1 exit status
