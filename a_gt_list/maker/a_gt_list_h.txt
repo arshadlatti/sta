@@ -1,0 +1,20 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_gt_list_public.h]
+
+#endif
+
+[file:..\..\a_def\a_def.h]
+
+
+[file:..\..\sta_general_types.h]
+
+
+[file:..\include\a_gt_list_header.h]
+
+[file:..\include\a_gt_list_public.h]
+
+[file:..\include\a_gt_list_footer.h]
+
+[file:..\include\a_gt_list_dual.h]

@@ -1,0 +1,43 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_gt_list_public.h]
+
+#endif
+
+[file:..\..\a_def\a_def.h]
+
+
+[file:..\..\sta_general_types.h]
+
+
+[file:..\include\a_gt_list_header.h]
+
+[file:..\include\a_gt_list_public.h]
+
+[file:..\include\a_gt_list_footer.h]
+
+
+
+#ifdef STA_GT_LIST_IMPLEMENTATION
+
+#ifndef STA_GT_LIST_IMPLEMENTATION_INCLUDED
+#define STA_GT_LIST_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+[file:..\a_gt_list.c]
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif
+
+
+

@@ -1,0 +1,7 @@
+//-- 
+C:\Users\adam\AppData\Local\Temp\ccmVkbZB.o:main.c:(.text+0x16): undefined reference to `gt_list_new'
+collect2: ld returned 1 exit status
+C:\Users\adam\AppData\Local\Temp\ccED7il8.o:main.c:(.text+0x1d): undefined reference to `gt_list_new_ex'
+collect2: ld returned 1 exit status
+C:\Users\adam\AppData\Local\Temp\ccCYBFiR.o:main.c:(.text+0x38): undefined reference to `sta_malloc_ex'
+collect2: ld returned 1 exit status
