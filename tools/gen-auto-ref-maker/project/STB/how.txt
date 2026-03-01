@@ -1,0 +1,6 @@
+place single header libs here
+
+like
+stb_image.h
+
+/project/stb_auto.h auto genrated

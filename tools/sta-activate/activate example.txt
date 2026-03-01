@@ -1,0 +1,15 @@
+sta-main must in a folder.
+
+example:
+
+sta
+sta-path.bat(d:\) 
+sta-activate.bat  
+
+project
+build.bat call project\set-build-env.bat
+if existed d:\sta-path.bat then call it search in c-h: drives
+
+in d:\dev 
+sta-main
+sta-dev mingw 32-64 and other tools

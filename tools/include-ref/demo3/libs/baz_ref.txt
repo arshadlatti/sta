@@ -1,0 +1,2 @@
+baz #include "..\libs\baz.c"
+fuzz #include "..\libs\fuzz.c"

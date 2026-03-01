@@ -1,0 +1,21 @@
+----------------------
+to build without much renaming place
+MinGW in C:\
+STA  in D:\projects
+
+or edit c:\mingw_path.bat
+SET MINGW_PATH_CUR=C:\mingw\bin
+SET STA_PATH_CUR=D:\Projects
+
+
+-----------------------
+1.run "build obj sta project.bat"
+2.write source code in main.c
+[2a].edit "Build exe quick.bat" and rename project.exe to output exe name you want
+3.run "Build exe quick.bat"
+[3a].if  you want to run multi test of project then edit "test project.bat" and rename project to name of your exe.
+4.after finish testing you can build much small exe output by using "build exe release final.bat". edit it change -o project.exe to name you want.
+---------
+/project/tmp files can be deleted on source distro.
+-----------
+

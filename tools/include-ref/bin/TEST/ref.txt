@@ -1,0 +1,2 @@
+foo #include "..\libs\src\foo.c"
+fun #include "..\libs\src\fun.c"

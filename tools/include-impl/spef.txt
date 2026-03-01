@@ -1,0 +1,7 @@
+#define STA_LIB_IMPL
+foo fun func
+
+------------
+format
+#define ...
+function name and space or newline

@@ -1,0 +1,22 @@
+gen-maker-ref a_lib_name
+list all c files
+
+..\maker\{a_lib_name}_c.txt
+..\auto-ref\{a_lib_name}.txt 
+
+maker\{a_lib_name}_c.txt 
+[file:..\source\{filename}.c]
+...
+
+auto-ref\{a_lib_name}.txt 
+{filename} space #include "sta-main\{a_lib_name}\source\{filename}.c"
+
+
+0-get-maker-ref.bat in {a_lib_name}\maker
+cd .. 
+cd source
+gen-maker-ref {a_lib_name}
+----------
+a_bytes_copy_malloc #include "sta-main\a_bytes\source\a_bytes_copy_malloc.c"
+maker
+[file:..\source\{}.c]

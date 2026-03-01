@@ -1,0 +1,6 @@
+//-- 
+C:\Users\adam\AppData\Local\Temp\ccuCQnRz.o:main.c:(.text+0xc): undefined reference to `baz'
+C:\Users\adam\AppData\Local\Temp\ccuCQnRz.o:main.c:(.text+0x11): undefined reference to `foo'
+C:\Users\adam\AppData\Local\Temp\ccuCQnRz.o:main.c:(.text+0x16): undefined reference to `fun'
+C:\Users\adam\AppData\Local\Temp\ccuCQnRz.o:main.c:(.text+0x1b): undefined reference to `foo'
+collect2: ld returned 1 exit status

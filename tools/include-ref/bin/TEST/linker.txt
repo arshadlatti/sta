@@ -1,0 +1,4 @@
+C:\Users\adam\AppData\Local\Temp\ccU1TesY.o:main.c:(.text+0xc): undefined reference to `foo'
+C:\Users\adam\AppData\Local\Temp\ccU1TesY.o:main.c:(.text+0x11): undefined reference to `fun'
+C:\Users\adam\AppData\Local\Temp\ccU1TesY.o:main.c:(.text+0x16): undefined reference to `foo'
+
