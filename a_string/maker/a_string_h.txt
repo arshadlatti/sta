@@ -1,0 +1,17 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_string_public.h]
+
+#endif
+
+[file:..\..\a_def\a_def.h]
+
+
+[file:..\include\a_string_header.h]
+
+[file:..\include\a_string_public.h]
+
+[file:..\include\a_string_footer.h]
+
+[file:..\include\a_string_dual.h]

@@ -1,0 +1,42 @@
+
+#ifdef STA_PUBLIC_API
+
+[file:..\include\a_string_public.h]
+
+#endif
+
+#ifdef STA_STRING_IMPLEMENTATION
+#define STA_BYTES_IMPLEMENTATION
+#endif
+[file:..\..\sta_bytes.h]
+
+#ifdef STA_STRING_IMPLEMENTATION
+#define STA_CONTEXT_DYNAMIC_HANDLER_IMPLEMENTATION
+#endif
+[file:..\..\sta_context_dynamic_handler.h]
+
+[file:..\include\a_string_header.h]
+
+[file:..\include\a_string_public.h]
+
+[file:..\include\a_string_footer.h]
+
+
+#ifdef STA_STRING_IMPLEMENTATION
+
+#ifndef STA_STRING_IMPLEMENTATION_INCLUDED
+#define STA_STRING_IMPLEMENTATION_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+[file:..\a_string.c]
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif
