@@ -1,0 +1,70 @@
+===============================================================================
+                       STA_CONFIG FORMAT SPECIFICATION
+===============================================================================
+
+1. OVERVIEW
+-------------------------------------------------------------------------------
+This document defines the plain text specifications for configuration files 
+processed by sta_config.h. It covers two file formats:
+  - String List File (.txt)
+  - Key-Value Pair / INI-Style File (.ini / .conf)
+
+
+2. GENERAL SYNTAX RULES
+-------------------------------------------------------------------------------
+- Encoding: ASCII or UTF-8 plain text.
+- Line Endings: Standard LF (\n) or CRLF (\r\n) are supported.
+- Comments: Any line where the first non-whitespace character is '#' or ';' 
+  is treated as a comment and ignored during loading.
+- Empty Lines: Blank lines or lines containing only whitespace characters 
+  are ignored.
+- Whitespace Trimming: Leading and trailing whitespace (spaces, tabs, newlines) 
+  is automatically trimmed from entries, keys, and values upon loading.
+
+
+3. STRING LIST FORMAT (.txt)
+-------------------------------------------------------------------------------
+A plain text format where each valid line represents a distinct string entry.
+
+Syntax:
+  <entry_string>
+
+Rules:
+  - Each line is evaluated individually.
+  - Trimmed strings are stored as individual nodes in a string_list container.
+
+Example File:
+  # Primary and secondary server definitions
+  server_host_primary
+  server_host_secondary
+  
+  ; Backup server
+  server_host_backup
+
+
+4. KEY-VALUE PAIR FORMAT (.ini / .conf)
+-------------------------------------------------------------------------------
+A structured format mapping string keys to string values using an assignment 
+delimiter.
+
+Syntax:
+  <key> = <value>
+
+Rules:
+  - Key Delimiter: The first '=' character on a line separates key and value.
+  - Keys: Must contain at least one non-whitespace character.
+  - Values: Any text following the '=' character up to the end of the line. 
+    Empty values are valid.
+  - Malformed Lines: Lines lacking an '=' delimiter or containing an empty key 
+    are treated as syntax errors and fail the load operation.
+
+Example File:
+  # Network Configuration Settings
+  port = 8080
+  max_connections = 128
+
+  ; System Timeouts
+  timeout_ms = 5000
+  retry_on_failure = true
+
+===============================================================================
