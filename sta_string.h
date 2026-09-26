@@ -33,6 +33,7 @@ char * a_string_get_after_ptr(const char * s,const char * ss);
 
 //string search and compare functions
 a_bool a_string_are_same(const char * a,const char * b);
+a_bool a_string_are_same_case_insensitive(const char * a,const char * b);
 a_bool a_string_is_valid(const char * s);
 int a_index_of_char(const char * s,int c);
 int a_index_of_string(const char * s,const char * ss);
@@ -49,6 +50,9 @@ void a_string_replace_char(char * s,char c,char new_c);
 void a_string_replace_chars(char * s,const char * c,char new_c);
 void w_string_replace_chars(wchar_t * s,const wchar_t * c,wchar_t new_c);
 void a_string_keep_alphanum_and_replace(char * s,const char * keep,int c_any_other);
+void a_string_trim_trailing(char * s);
+//
+char * a_string_trim_leading_ptr(const char * s);
 
 //bytes
 uint8_t* a_bytes_from_hex_string_malloc(const char * hs,int extra_bytes,int * out_size);
@@ -139,6 +143,7 @@ else line = empty_line;
 #define ssz_cc(s,cc) ssz__(a_string_from_char_array_malloc(s,cc))
 
 #define ssz_1(psz) ssz__(a_string_copy_malloc(psz))
+//#define uuz_1(s)  uuz__(w_string_copy_malloc(s))
 #define ssz_2(psz,psz2) ssz__(a_string_copy_2_malloc(psz,psz2))
 #define ssz_3(psz,psz2,psz3) ssz__(a_string_copy_3_malloc(psz,psz2,psz3))
 //#define ssz_4(psz,psz2,psz3,psz4) ssz__(a_string_copy_4_malloc(psz,psz2,psz3,psz4))
@@ -163,6 +168,55 @@ wchar_t * uuz__cdh(a_cdh,wchar_t * s);
 
 
 
+
+//2str
+//int
+#define ssz_i(i) ssz__(ssz__i(i))
+//uint
+#define ssz_u(i) ssz__(ssz__u(i))
+//hex
+/* #define ssz_hex(i) ssz__(ssz__hex(i))
+#define ssz_HEX(i) ssz__(ssz__HEXh(i))
+#define ssz_hex_(i,c) ssz_s_cc(ssz_hex(i),c)
+#define ssz_HEX_(i,c) ssz_s_cc(ssz_HEX(i),c)
+ */
+//double
+#define ssz_d
+//.count
+#define ssz_d_
+//.count
+#define ssz_f_
+//64bit int uint
+#define ssz_i64
+#define ssz_u64
+//system time and date a_system_...
+#define ssz_time
+#define ssz_date
+#define ssz_date_time
+//basic like
+#define ssz_left(s,n) 
+#define ssz_right(s,n) 
+#define ssz_mid(s,m,n) 
+#define ssz_mids(s,m) 
+
+
+//float
+#define ssz_f(f) ssz__(ssz__f(f))
+#define ssz_F(f) ssz__(ssz__Ff(f))
+//float without extra zeros
+#define ssz_g(f) ssz__(ssz__g(f))
+#define ssz_G(f) ssz__(ssz__Gg(f))
+
+#define ssz___num_include(function_name,type_name)  char * function_name(type_name amount);
+ssz___num_include(ssz__f,float)
+ssz___num_include(ssz__Ff,float)
+ssz___num_include(ssz__g,float)
+ssz___num_include(ssz__G,float)
+
+ssz___num_include(ssz__i,int)
+ssz___num_include(ssz__u,unsigned int)
+ssz___num_include(ssz__hex,unsigned int)
+ssz___num_include(ssz__HEX,unsigned int)
 
 
 
@@ -223,6 +277,9 @@ a_bool a_string_to_file(const char * file_name,const char * text);
 // var uint8_t * data; long data_size;
  #define a_data_bytes_from_file_malloc(filename) long data_size; uint8_t * data = a_bytes_from_file_malloc(filename,&data_size);
 
+//cdh
+#define a_data_bytes_from_file(filename) a_data_bytes_from_file_malloc(filename); a_handle(data,free);
+
  
 #define a_data_bytes_from_file_part_malloc(filename,offset,size) long data_size; uint8_t * data = a_bytes_from_file_part(filename,offset,size);
 
@@ -230,6 +287,24 @@ a_bool a_string_to_file(const char * file_name,const char * text);
 
 #define a_data_bytes_to_file(filename) a_bytes_to_file(filename,data,data_size);
 
+
+//with sta_context_dynamic_handler
+#define a_create_data_from_file(data,data_size,file) 	long data_size;\
+	uint8_t * data = (uint8_t*)a_bytes_from_file_malloc(file,&data_size);\
+	a_handle(data,free)
+
+#define a_create_record_from_file(data,data_size_in_bytes,file,name_t) 	long data_size_in_bytes;\
+	name_t * data = (name_t*)a_bytes_from_file_malloc(file,&data_size_in_bytes);\
+	if(data){if(data_size_in_bytes < sizeof(name_t)){ free(data); data = 0;}}\
+	a_handle(data,free)
+	
+	
+#define a_create_array_from_file(data,data_size,file,name_t) 	long data_size;\
+	name_t * data = (name_t*)a_bytes_from_file_malloc(file,&data_size);\
+	a_handle(data,free)\
+	data_size /= sizeof(name_t);
+	
+	
 
 // A Project By Arshad Latti
  
@@ -476,6 +551,7 @@ for(i_x = 0; i_x < w ; i_x++){
 #define verbose_printf(expr,...)
 #endif
 
+// A Project By Arshad Latti
 #endif
 
 
@@ -533,6 +609,9 @@ a_bool a_string_to_file(const char * file_name,const char * text);
 // var uint8_t * data; long data_size;
  #define a_data_bytes_from_file_malloc(filename) long data_size; uint8_t * data = a_bytes_from_file_malloc(filename,&data_size);
 
+//cdh
+#define a_data_bytes_from_file(filename) a_data_bytes_from_file_malloc(filename); a_handle(data,free);
+
  
 #define a_data_bytes_from_file_part_malloc(filename,offset,size) long data_size; uint8_t * data = a_bytes_from_file_part(filename,offset,size);
 
@@ -540,6 +619,24 @@ a_bool a_string_to_file(const char * file_name,const char * text);
 
 #define a_data_bytes_to_file(filename) a_bytes_to_file(filename,data,data_size);
 
+
+//with sta_context_dynamic_handler
+#define a_create_data_from_file(data,data_size,file) 	long data_size;\
+	uint8_t * data = (uint8_t*)a_bytes_from_file_malloc(file,&data_size);\
+	a_handle(data,free)
+
+#define a_create_record_from_file(data,data_size_in_bytes,file,name_t) 	long data_size_in_bytes;\
+	name_t * data = (name_t*)a_bytes_from_file_malloc(file,&data_size_in_bytes);\
+	if(data){if(data_size_in_bytes < sizeof(name_t)){ free(data); data = 0;}}\
+	a_handle(data,free)
+	
+	
+#define a_create_array_from_file(data,data_size,file,name_t) 	long data_size;\
+	name_t * data = (name_t*)a_bytes_from_file_malloc(file,&data_size);\
+	a_handle(data,free)\
+	data_size /= sizeof(name_t);
+	
+	
 
 // A Project By Arshad Latti
  
@@ -832,15 +929,16 @@ if(!cdh) return 0;
 
 #define a_handle(ptr,func) if(ptr)\
 {if(!context_dynamic_handler_add(cdh,ptr,func)) {(*func)(ptr); a_return(0)}}\
-else a_return(0)
+else a_return(0);
 	
 #define a_handle_var(var,func) if(!context_dynamic_handler_add_var(cdh,(void **)&var,func)){if(var)(*func)(var);a_return(0)}
 
 #define a_handle_r(ptr,func) if(cdh){cdh->r = ptr; a_handle_var(cdh->r,func)}else{if(ptr)(*func)(ptr); a_return(0)}
 
 #define a_return(expr) {context_dynamic_handler_delete(cdh);return expr;}
-#define a_ok(expr) {if(!(expr)) a_return(0)}
-#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error); a_return(0)}}
+#define a_sure(expr) {if(!(expr)) a_return(0)}
+//#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error) a_return(0) }}
+#define a_ok(ptr) {if(ptr){if(ptr->is_error) a_return(0) } else a_return(0)}
 
 #define a_return_ok(expr) {if(cdh) cdh->r = 0;context_dynamic_handler_delete(cdh);return expr;}
 
@@ -875,14 +973,14 @@ memset(name_of_variable,0,sizeof(name_of_type));
 // format : {a_new_}name_of_type {a_delete_}name_of_type
 #define a_create(name_of_type,name_of_variable) a_create_(name_of_type,(),name_of_variable)
 //a_create_(a,(),v)
-#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 #define a_new(name_of_type,name_of_variable) a_new_(name_of_type,(),name_of_variable)
 
-#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 
@@ -951,6 +1049,8 @@ gt_list__node_t * gt_list__node_remove(gt_list_t * gtl,a_bool is_at_first);
 gt_list__node_t * gt_list__node_add_at(gt_list_t * gtl,size_t item_size,int index);
 gt_list__node_t * gt_list__node_get_at(gt_list_t * gtl,int index);
 
+
+// A Project By Arshad Latti
 
 #endif
 
@@ -1194,6 +1294,7 @@ for(i_x = 0; i_x < w ; i_x++){
 #define verbose_printf(expr,...)
 #endif
 
+// A Project By Arshad Latti
 #endif
 
 
@@ -1310,6 +1411,8 @@ gt_list__node_t * gt_list__node_remove(gt_list_t * gtl,a_bool is_at_first);
 gt_list__node_t * gt_list__node_add_at(gt_list_t * gtl,size_t item_size,int index);
 gt_list__node_t * gt_list__node_get_at(gt_list_t * gtl,int index);
 
+
+// A Project By Arshad Latti
 
 
 void * sta_malloc_ex(void ** out_ptr_ptr,size_t size);
@@ -1674,15 +1777,16 @@ if(!cdh) return 0;
 
 #define a_handle(ptr,func) if(ptr)\
 {if(!context_dynamic_handler_add(cdh,ptr,func)) {(*func)(ptr); a_return(0)}}\
-else a_return(0)
+else a_return(0);
 	
 #define a_handle_var(var,func) if(!context_dynamic_handler_add_var(cdh,(void **)&var,func)){if(var)(*func)(var);a_return(0)}
 
 #define a_handle_r(ptr,func) if(cdh){cdh->r = ptr; a_handle_var(cdh->r,func)}else{if(ptr)(*func)(ptr); a_return(0)}
 
 #define a_return(expr) {context_dynamic_handler_delete(cdh);return expr;}
-#define a_ok(expr) {if(!(expr)) a_return(0)}
-#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error); a_return(0)}}
+#define a_sure(expr) {if(!(expr)) a_return(0)}
+//#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error) a_return(0) }}
+#define a_ok(ptr) {if(ptr){if(ptr->is_error) a_return(0) } else a_return(0)}
 
 #define a_return_ok(expr) {if(cdh) cdh->r = 0;context_dynamic_handler_delete(cdh);return expr;}
 
@@ -1717,14 +1821,14 @@ memset(name_of_variable,0,sizeof(name_of_type));
 // format : {a_new_}name_of_type {a_delete_}name_of_type
 #define a_create(name_of_type,name_of_variable) a_create_(name_of_type,(),name_of_variable)
 //a_create_(a,(),v)
-#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 #define a_new(name_of_type,name_of_variable) a_new_(name_of_type,(),name_of_variable)
 
-#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 
@@ -1918,6 +2022,7 @@ char * a_string_get_after_ptr(const char * s,const char * ss);
 
 //string search and compare functions
 a_bool a_string_are_same(const char * a,const char * b);
+a_bool a_string_are_same_case_insensitive(const char * a,const char * b);
 a_bool a_string_is_valid(const char * s);
 int a_index_of_char(const char * s,int c);
 int a_index_of_string(const char * s,const char * ss);
@@ -1934,6 +2039,9 @@ void a_string_replace_char(char * s,char c,char new_c);
 void a_string_replace_chars(char * s,const char * c,char new_c);
 void w_string_replace_chars(wchar_t * s,const wchar_t * c,wchar_t new_c);
 void a_string_keep_alphanum_and_replace(char * s,const char * keep,int c_any_other);
+void a_string_trim_trailing(char * s);
+//
+char * a_string_trim_leading_ptr(const char * s);
 
 //bytes
 uint8_t* a_bytes_from_hex_string_malloc(const char * hs,int extra_bytes,int * out_size);
@@ -2024,6 +2132,7 @@ else line = empty_line;
 #define ssz_cc(s,cc) ssz__(a_string_from_char_array_malloc(s,cc))
 
 #define ssz_1(psz) ssz__(a_string_copy_malloc(psz))
+//#define uuz_1(s)  uuz__(w_string_copy_malloc(s))
 #define ssz_2(psz,psz2) ssz__(a_string_copy_2_malloc(psz,psz2))
 #define ssz_3(psz,psz2,psz3) ssz__(a_string_copy_3_malloc(psz,psz2,psz3))
 //#define ssz_4(psz,psz2,psz3,psz4) ssz__(a_string_copy_4_malloc(psz,psz2,psz3,psz4))
@@ -2049,6 +2158,55 @@ wchar_t * uuz__cdh(a_cdh,wchar_t * s);
 
 
 
+//2str
+//int
+#define ssz_i(i) ssz__(ssz__i(i))
+//uint
+#define ssz_u(i) ssz__(ssz__u(i))
+//hex
+/* #define ssz_hex(i) ssz__(ssz__hex(i))
+#define ssz_HEX(i) ssz__(ssz__HEXh(i))
+#define ssz_hex_(i,c) ssz_s_cc(ssz_hex(i),c)
+#define ssz_HEX_(i,c) ssz_s_cc(ssz_HEX(i),c)
+ */
+//double
+#define ssz_d
+//.count
+#define ssz_d_
+//.count
+#define ssz_f_
+//64bit int uint
+#define ssz_i64
+#define ssz_u64
+//system time and date a_system_...
+#define ssz_time
+#define ssz_date
+#define ssz_date_time
+//basic like
+#define ssz_left(s,n) 
+#define ssz_right(s,n) 
+#define ssz_mid(s,m,n) 
+#define ssz_mids(s,m) 
+
+
+//float
+#define ssz_f(f) ssz__(ssz__f(f))
+#define ssz_F(f) ssz__(ssz__Ff(f))
+//float without extra zeros
+#define ssz_g(f) ssz__(ssz__g(f))
+#define ssz_G(f) ssz__(ssz__Gg(f))
+
+#define ssz___num_include(function_name,type_name)  char * function_name(type_name amount);
+ssz___num_include(ssz__f,float)
+ssz___num_include(ssz__Ff,float)
+ssz___num_include(ssz__g,float)
+ssz___num_include(ssz__G,float)
+
+ssz___num_include(ssz__i,int)
+ssz___num_include(ssz__u,unsigned int)
+ssz___num_include(ssz__hex,unsigned int)
+ssz___num_include(ssz__HEX,unsigned int)
+
 
 
 
@@ -2058,6 +2216,52 @@ wchar_t * uuz__cdh(a_cdh,wchar_t * s);
 
 // A Project By Arshad Latti
 
+
+
+// source part
+
+/* specifier	Output	Example
+d or i	Signed decimal integer	392
+u	Unsigned decimal integer	7235
+o	Unsigned octal	610
+x	Unsigned hexadecimal integer	7fa
+X	Unsigned hexadecimal integer (uppercase)	7FA
+f	Decimal floating point, lowercase	392.65
+F	Decimal floating point, uppercase	392.65
+e	Scientific notation (mantissa/exponent), lowercase	3.9265e+2
+E	Scientific notation (mantissa/exponent), uppercase	3.9265E+2
+g	Use the shortest representation: %e or %f	392.65
+G	Use the shortest representation: %E or %F	392.65
+a	Hexadecimal floating point, lowercase	-0xc.90fep-2
+A	Hexadecimal floating point, uppercase	-0XC.90FEP-2
+c	Character	a
+s	String of characters	sample
+p	Pointer address	b8000000
+n	Nothing printed.
+The corresponding argument must be a pointer to a signed int.
+The number of characters written so far is stored in the pointed location.	
+%	A % followed by another % character will write a single % to the stream.	% */
+
+
+/* 
+char * ssz__f(float amount)
+{
+int len = snprintf(NULL, 0, "%f", amount);
+char * result =(char *) malloc(len + 1);
+if(result)
+ snprintf(result, len + 1, "%f", amount);
+return result;
+} 
+*/
+
+#define ssz___num_source(function_name,type_name,string_format) char * function_name(type_name amount){\
+	int len = snprintf(NULL, 0, string_format, amount);\
+	if(len < 0) return a_null;\
+char * result =(char *) malloc(len + 1);\
+if(result){result[0]=0; \
+snprintf(result, len + 1, string_format, amount);}\
+return result;\
+}
 
 
 
@@ -2264,6 +2468,23 @@ a_bool a_string_are_same(const char * a,const char * b)
 		return a_true;
 	}
 	return a_false;
+}
+
+//note: this(a_string_are_same_case_insensitive) function idea by Arshad Latti and coded by DeepSeek
+a_bool a_string_are_same_case_insensitive(const char * a,const char * b)
+{
+	int cca, ccb;
+	if(!a || !b) return a_false;
+	cca = (int)strlen(a);
+	ccb = (int)strlen(b);
+	if(cca != ccb) return a_false;
+	for_i(cca)
+	{
+		int ca = tolower((unsigned char)a[i]);
+		int cb = tolower((unsigned char)b[i]);
+		if(ca != cb) return a_false;
+	}
+	return a_true;
 }
 
 // >= 0 mean valid and on -1 mean not found.
@@ -2542,6 +2763,30 @@ void a_string_replace_chars(char * s,const char * c,char new_c)
 	}
 }
 
+
+char * a_string_trim_leading_ptr(const char * s)
+{
+	if(!s) return a_null;
+	while(*s == ' ' || *s == '\t' || *s == '\r' ||
+	      *s == '\n' || *s == '\v' || *s == '\f')
+		s++;
+	return (char *)s;
+}
+
+void a_string_trim_trailing(char * s)
+{
+	int cc;
+	if(!s) return;
+	cc = (int)strlen(s);
+	while(cc > 0 && (s[cc-1] == ' ' || s[cc-1] == '\t' ||
+	                 s[cc-1] == '\r' || s[cc-1] == '\n' ||
+	                 s[cc-1] == '\v' || s[cc-1] == '\f'))
+	{
+		s[cc-1] = 0;
+		cc--;
+	}
+}
+
 a_bool a_text_read_line(char ** lines,char ** line,int * line_size)
 {
 	int cc=0;
@@ -2647,6 +2892,24 @@ char * ssz__cdh(a_cdh,char * s)
 	
 	return ssz__empty;
 }
+
+ssz___num_source(ssz__f,float,"%f")
+
+
+ssz___num_source(ssz__Ff,float,"%F")
+
+ssz___num_source(ssz__g,float,"%g")
+
+ssz___num_source(ssz__Gg,float,"%G")
+
+ssz___num_source(ssz__hex,unsigned int,"%x")
+
+
+ssz___num_source(ssz__HEXh,unsigned int,"%X")
+
+ssz___num_source(ssz__i,int,"%i")
+
+ssz___num_source(ssz__u,unsigned int,"%u")
 
 wchar_t  uuz__empty[4]={0};
 wchar_t * uuz__cdh(a_cdh,wchar_t * s)
