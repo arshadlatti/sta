@@ -7,18 +7,60 @@
 */
 
 
+/* --- Exception Type Constants --- */
+#define CDH_OOM -2 /**< Out of Memory */
+#define CDH_ERROR     -1  /**< Unkown error */
+
+#define CDH_NONE      0  /**< No error */
+#define CDH_ERROR_UNKOWN   1  /**< Unkown error */
+#define CDH_STR       2  /**< Error payload is a string */
+#define CDH_CODE      3  /**< Error payload is an integer code */
+#define CDH_DATA      4  /**< Error payload is a custom data pointer */
+#define CDH_DATA_USER 1001 /**< Base value for user-defined error types */
+
+typedef struct {
+    int type;  // -1 = erorr, 0=none,1 = error, 2=str,3 = code, 4..N = data
+ 
+        int code; // for CODE type
+		       char * data; // for STRING and DATA type 
+	gt_term_free_func free_fn; // for both str and ptr (optional)
+} cdh_exception_t;
+
+
+#define a_throw(type,code,data,free_fn) do{ context_dynamic_handler_set_exception(cdh,type,code,data,free_fn); a_return(0) }while(0);
+#define a_throw_i(code) a_throw(CDH_CODE,code,a_null,a_null)
+#define a_throw_s(str)  a_throw(CDH_STR,CDH_ERROR,(void*)(str),a_null)
+#define a_throw_s_copy(str) a_throw(CDH_STR,CDH_ERROR,cdh_str_copy_malloc(str), (gt_term_free_func)free)
+
+
+ // delete old if needed
+#define a_try a_sure(context_dynamic_handler_start_try(cdh)) do {
+#define a_catch }while(0); if(a_is_error){
+#define a_final } context_dynamic_handler_clear_exception_and_error(cdh);
+#define a_fail } if(a_is_error) a_return(0)
+#define Try a_try 
+#define Catch a_catch
+#define Final a_final
+#define Fail a_fail
+
+
+
+
 typedef struct context_dynamic_handler_s context_dynamic_handler_t;
 
 struct context_dynamic_handler_s
 {
 	context_dynamic_handler_t * sub;
-	
-	/* context_dynamic_handler_t * super;
-	int sub_is_error; */
+	context_dynamic_handler_t * super;
+	//int sub_is_error;
 	
 	int is_error;
 	void * r;//return value
 	gt_list_t * dh;
+	
+		// sub_exception is owns and exception is not owned 
+	cdh_exception_t * exception;// set set by caller, throw use this, its free by caller 
+	cdh_exception_t * sub_exception;// for called function , sub->exception = cdh->sub_exception;
 };
 
 
@@ -36,21 +78,39 @@ void * context_dynamic_handler_add_var(context_dynamic_handler_t * cdh,void ** v
 void * context_dynamic_handler_set_error(context_dynamic_handler_t * cdh,int is_error);
 
 
+
+
+#define a_is_error context_dynamic_handler_get_error(cdh)
+int context_dynamic_handler_get_error(context_dynamic_handler_t * cdh);
+a_bool context_dynamic_handler_set_exception(context_dynamic_handler_t * cdh,int type,int code,void * data,gt_term_free_func free_fn);
+
+int context_dynamic_handler_clear_exception_and_error(context_dynamic_handler_t * cdh);
+
+a_bool context_dynamic_handler_start_try(context_dynamic_handler_t * cdh);
+
+
+
+
+
+
+
+
 //var cdh
 #define a_begin(expr) context_dynamic_handler_t * cdh = context_dynamic_handler_new();\
 if(!cdh) return 0;
 
 #define a_handle(ptr,func) if(ptr)\
 {if(!context_dynamic_handler_add(cdh,ptr,func)) {(*func)(ptr); a_return(0)}}\
-else a_return(0)
+else a_return(0);
 	
 #define a_handle_var(var,func) if(!context_dynamic_handler_add_var(cdh,(void **)&var,func)){if(var)(*func)(var);a_return(0)}
 
 #define a_handle_r(ptr,func) if(cdh){cdh->r = ptr; a_handle_var(cdh->r,func)}else{if(ptr)(*func)(ptr); a_return(0)}
 
 #define a_return(expr) {context_dynamic_handler_delete(cdh);return expr;}
-#define a_ok(expr) {if(!(expr)) a_return(0)}
-#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error); a_return(0)}}
+#define a_sure(expr) {if(!(expr)) a_return(0)}
+//#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error) a_return(0) }}
+#define a_ok(ptr) {if(ptr){if(ptr->is_error) a_return(0) } else a_return(0)}
 
 #define a_return_ok(expr) {if(cdh) cdh->r = 0;context_dynamic_handler_delete(cdh);return expr;}
 
@@ -85,14 +145,14 @@ memset(name_of_variable,0,sizeof(name_of_type));
 // format : {a_new_}name_of_type {a_delete_}name_of_type
 #define a_create(name_of_type,name_of_variable) a_create_(name_of_type,(),name_of_variable)
 //a_create_(a,(),v)
-#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 #define a_new(name_of_type,name_of_variable) a_new_(name_of_type,(),name_of_variable)
 
-#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 
@@ -161,6 +221,8 @@ gt_list__node_t * gt_list__node_remove(gt_list_t * gtl,a_bool is_at_first);
 gt_list__node_t * gt_list__node_add_at(gt_list_t * gtl,size_t item_size,int index);
 gt_list__node_t * gt_list__node_get_at(gt_list_t * gtl,int index);
 
+
+// A Project By Arshad Latti
 
 #endif
 
@@ -404,6 +466,7 @@ for(i_x = 0; i_x < w ; i_x++){
 #define verbose_printf(expr,...)
 #endif
 
+// A Project By Arshad Latti
 #endif
 
 
@@ -520,6 +583,8 @@ gt_list__node_t * gt_list__node_remove(gt_list_t * gtl,a_bool is_at_first);
 gt_list__node_t * gt_list__node_add_at(gt_list_t * gtl,size_t item_size,int index);
 gt_list__node_t * gt_list__node_get_at(gt_list_t * gtl,int index);
 
+
+// A Project By Arshad Latti
 
 
 void * sta_malloc_ex(void ** out_ptr_ptr,size_t size);
@@ -849,18 +914,60 @@ void context_dynamic_handler__item_term(void * p);
 */
 
 
+/* --- Exception Type Constants --- */
+#define CDH_OOM -2 /**< Out of Memory */
+#define CDH_ERROR     -1  /**< Unkown error */
+
+#define CDH_NONE      0  /**< No error */
+#define CDH_ERROR_UNKOWN   1  /**< Unkown error */
+#define CDH_STR       2  /**< Error payload is a string */
+#define CDH_CODE      3  /**< Error payload is an integer code */
+#define CDH_DATA      4  /**< Error payload is a custom data pointer */
+#define CDH_DATA_USER 1001 /**< Base value for user-defined error types */
+
+typedef struct {
+    int type;  // -1 = erorr, 0=none,1 = error, 2=str,3 = code, 4..N = data
+ 
+        int code; // for CODE type
+		       char * data; // for STRING and DATA type 
+	gt_term_free_func free_fn; // for both str and ptr (optional)
+} cdh_exception_t;
+
+
+#define a_throw(type,code,data,free_fn) do{ context_dynamic_handler_set_exception(cdh,type,code,data,free_fn); a_return(0) }while(0);
+#define a_throw_i(code) a_throw(CDH_CODE,code,a_null,a_null)
+#define a_throw_s(str)  a_throw(CDH_STR,CDH_ERROR,(void*)(str),a_null)
+#define a_throw_s_copy(str) a_throw(CDH_STR,CDH_ERROR,cdh_str_copy_malloc(str), (gt_term_free_func)free)
+
+
+ // delete old if needed
+#define a_try a_sure(context_dynamic_handler_start_try(cdh)) do {
+#define a_catch }while(0); if(a_is_error){
+#define a_final } context_dynamic_handler_clear_exception_and_error(cdh);
+#define a_fail } if(a_is_error) a_return(0)
+#define Try a_try 
+#define Catch a_catch
+#define Final a_final
+#define Fail a_fail
+
+
+
+
 typedef struct context_dynamic_handler_s context_dynamic_handler_t;
 
 struct context_dynamic_handler_s
 {
 	context_dynamic_handler_t * sub;
-	
-	/* context_dynamic_handler_t * super;
-	int sub_is_error; */
+	context_dynamic_handler_t * super;
+	//int sub_is_error;
 	
 	int is_error;
 	void * r;//return value
 	gt_list_t * dh;
+	
+		// sub_exception is owns and exception is not owned 
+	cdh_exception_t * exception;// set set by caller, throw use this, its free by caller 
+	cdh_exception_t * sub_exception;// for called function , sub->exception = cdh->sub_exception;
 };
 
 
@@ -878,21 +985,39 @@ void * context_dynamic_handler_add_var(context_dynamic_handler_t * cdh,void ** v
 void * context_dynamic_handler_set_error(context_dynamic_handler_t * cdh,int is_error);
 
 
+
+
+#define a_is_error context_dynamic_handler_get_error(cdh)
+int context_dynamic_handler_get_error(context_dynamic_handler_t * cdh);
+a_bool context_dynamic_handler_set_exception(context_dynamic_handler_t * cdh,int type,int code,void * data,gt_term_free_func free_fn);
+
+int context_dynamic_handler_clear_exception_and_error(context_dynamic_handler_t * cdh);
+
+a_bool context_dynamic_handler_start_try(context_dynamic_handler_t * cdh);
+
+
+
+
+
+
+
+
 //var cdh
 #define a_begin(expr) context_dynamic_handler_t * cdh = context_dynamic_handler_new();\
 if(!cdh) return 0;
 
 #define a_handle(ptr,func) if(ptr)\
 {if(!context_dynamic_handler_add(cdh,ptr,func)) {(*func)(ptr); a_return(0)}}\
-else a_return(0)
+else a_return(0);
 	
 #define a_handle_var(var,func) if(!context_dynamic_handler_add_var(cdh,(void **)&var,func)){if(var)(*func)(var);a_return(0)}
 
 #define a_handle_r(ptr,func) if(cdh){cdh->r = ptr; a_handle_var(cdh->r,func)}else{if(ptr)(*func)(ptr); a_return(0)}
 
 #define a_return(expr) {context_dynamic_handler_delete(cdh);return expr;}
-#define a_ok(expr) {if(!(expr)) a_return(0)}
-#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error); a_return(0)}}
+#define a_sure(expr) {if(!(expr)) a_return(0)}
+//#define a_ok_cdh(expr) {if(cdh){ if(cdh->is_error) a_return(0) }}
+#define a_ok(ptr) {if(ptr){if(ptr->is_error) a_return(0) } else a_return(0)}
 
 #define a_return_ok(expr) {if(cdh) cdh->r = 0;context_dynamic_handler_delete(cdh);return expr;}
 
@@ -927,18 +1052,27 @@ memset(name_of_variable,0,sizeof(name_of_type));
 // format : {a_new_}name_of_type {a_delete_}name_of_type
 #define a_create(name_of_type,name_of_variable) a_create_(name_of_type,(),name_of_variable)
 //a_create_(a,(),v)
-#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_create_(name_of_type,parameters,name_of_variable) name_of_type * name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 #define a_new(name_of_type,name_of_variable) a_new_(name_of_type,(),name_of_variable)
 
-#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new##name_of_type parameters;\
-a_handle(name_of_variable,a_delete##name_of_type)
+#define a_new_(name_of_type,parameters,name_of_variable)name_of_variable = a_new_##name_of_type parameters;\
+a_handle(name_of_variable,a_delete_##name_of_type)
 
 
 
 // A Project By Arshad Latti
+
+
+char * cdh_str_copy_malloc(const char * str);
+
+
+void cdh_exception_clear(cdh_exception_t * e);
+cdh_exception_t * cdh_exception_new(void);
+void cdh_exception_delete(cdh_exception_t * cdhe);
+a_bool cdh_exception_set(cdh_exception_t * cdhe,int type,int code,void * data,gt_term_free_func free_fn);
 
 
 #ifdef __cplusplus
@@ -959,6 +1093,71 @@ a_handle(name_of_variable,a_delete##name_of_type)
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+
+//cdh_exception_clear coded by deepseek
+void cdh_exception_clear(cdh_exception_t * e)
+{
+    if (!e) return;
+    if (e->free_fn && e->data) {
+        /* Only string-like and data payloads are freed.  Code-only
+           exceptions have data == NULL so nothing happens. */
+        (*e->free_fn)(e->data);
+    }
+    memset(e, 0, sizeof(cdh_exception_t));
+}
+
+
+
+//cdh_exception_delete is coded by deepseek
+
+void cdh_exception_delete(cdh_exception_t * e)
+{
+    if (!e) return;
+    cdh_exception_clear(e);
+    free(e);
+}
+
+
+//cdh_exception_new coded by deepseek
+cdh_exception_t * cdh_exception_new(void)
+{
+    return (cdh_exception_t *)calloc(1, sizeof(cdh_exception_t));
+}
+
+
+
+//cdh_exception_set is co coded by DeepSeek and Arshad Latti
+a_bool cdh_exception_set(cdh_exception_t * e, int type, int code,
+                         void * data, gt_term_free_func free_fn)
+{
+    if (!e) return a_false;
+    cdh_exception_clear(e);
+    e->type    = type;
+    e->code    = code;
+    e->data    = (char *)data;
+    e->free_fn = free_fn;
+	
+	if(type == CDH_STR && !data)
+	{
+		 e->free_fn = a_null;
+		 e->type = CDH_OOM;
+	}
+    return a_true;
+}
+
+
+
+//cdh_str_copy_malloc coded by DeepSeek
+char * cdh_str_copy_malloc(const char * str)
+{
+    if (!str) return a_null;
+    size_t n = strlen(str) + 1;
+    char * p = (char *)malloc(n);
+    if (p) memcpy(p, str, n);
+    return p;
+}
 
 void * context_dynamic_handler_add(context_dynamic_handler_t * cdh,void * ptr,void * func)
 {
@@ -988,15 +1187,54 @@ void * context_dynamic_handler_add_var(context_dynamic_handler_t * cdh,void ** v
  return a_null;
 }
 
+//context_dynamic_handler_clear_exception_and_error  is coded with help of DeepSeek
+int context_dynamic_handler_clear_exception_and_error(context_dynamic_handler_t * cdh)
+{
+    if (!cdh) return 0;
+    cdh_exception_clear(cdh->sub_exception);
+   // cdh_exception_clear(cdh->exception);
+    cdh->is_error = 0;
+    return 0;
+}
+
 void context_dynamic_handler_delete(context_dynamic_handler_t * cdh)
 {
 	if(cdh)
 	{
 	 if(cdh->sub)
        context_dynamic_handler_delete(cdh->sub);
+    if (cdh->super) cdh->super->sub = a_null;
+	
+	if (cdh->sub_exception) 
+		cdh_exception_delete(cdh->sub_exception);
+	
       gt_list_delete(cdh->dh);
 	  free(cdh);
 	}
+}
+
+
+int context_dynamic_handler_get_error(context_dynamic_handler_t * cdh)
+{
+	if(cdh)
+	{
+	if(cdh->is_error) return cdh->is_error;
+	//for handling in this function, try catch block
+	if(cdh->sub_exception)
+	 {
+	   if(cdh->sub_exception->type) return cdh->sub_exception->type;
+     }
+	 // for bubble up exception
+	if(cdh->exception)
+	 {
+	   if(cdh->exception->type) return cdh->exception->type;
+     }
+	 return 0;
+	}
+	
+	
+	
+	return 1;
 }
 
 context_dynamic_handler_t * context_dynamic_handler_new(void)
@@ -1015,7 +1253,9 @@ context_dynamic_handler_t * context_dynamic_handler_new(void)
 	r->is_error=0;
 	r->r=a_null;
 	r->sub= a_null;
-	
+	r->super = a_null;
+	r->exception = a_null;
+	r->sub_exception =a_null;
 	}
 	
 	return r;
@@ -1029,7 +1269,51 @@ void * context_dynamic_handler_set_error(context_dynamic_handler_t * cdh,int is_
 	{
 		cdh->is_error = is_error;
 	}
+	return cdh;
 }
+
+//context_dynamic_handler_set_exception is coded with help of DeepSeek
+
+
+a_bool context_dynamic_handler_set_exception(context_dynamic_handler_t * cdh,
+                                          int type, int code,
+                                          void * data,
+                                          gt_term_free_func free_fn)
+{
+	a_bool is_added = a_false;
+	if(cdh) 
+	{
+	cdh->is_error = a_true;
+	
+    if (cdh->exception) {
+		cdh_exception_set(cdh->exception, type, code, data, free_fn);
+	 is_added = a_true;
+	}
+
+	}
+	
+    if(!is_added)
+	{
+		 if (free_fn && data) {
+        (*free_fn)(data);
+    }
+	}
+    return is_added;
+}
+
+//context_dynamic_handler_start_try
+// context_dynamic_handler_start_try is coded by DeepSeek
+a_bool context_dynamic_handler_start_try(context_dynamic_handler_t * cdh)
+{
+    if (!cdh) return a_false;
+    if (cdh->sub_exception) cdh_exception_clear(cdh->sub_exception);
+    else {
+        cdh->sub_exception = cdh_exception_new();
+        if (!cdh->sub_exception) return a_false;
+    }
+    return a_true;
+}
+
 
 context_dynamic_handler_t * context_dynamic_handler_sub(context_dynamic_handler_t * cdh)
 {
@@ -1038,6 +1322,10 @@ context_dynamic_handler_t * context_dynamic_handler_sub(context_dynamic_handler_
 		if(cdh->sub)
 			context_dynamic_handler_delete(cdh->sub);
 		cdh->sub = context_dynamic_handler_new();
+		 if (cdh->sub) {
+        cdh->sub->exception = cdh->sub_exception;
+		cdh->sub->super = cdh;
+    }
 		return cdh->sub;
 	}
 	return a_null;
