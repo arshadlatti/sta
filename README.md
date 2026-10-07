@@ -1,6 +1,6 @@
 
 # STA
-STA(sta-main) is a project to collect and create single header libraries like stb. STA also supports dual file h and c and traditional per-function c source file.
+STA(sta-main) is a project to collect and create single header libraries like [stb](https://github.com/nothings/stb). STA also supports dual file h and c and traditional per-function c source file.
 
 | Component | Description |
 |---|---|
